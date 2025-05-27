@@ -1,0 +1,106 @@
+# application port number
+server:
+  port: 8083
+
+spring:
+
+  # setting application name
+  application:
+    name: paymentservice
+
+  # database configs
+  datasource:
+    url: jdbc:mysql://localhost:3306/ObviousAI
+    username: allego
+    password: allego
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # jpa properties
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  # Config server
+  config:
+    import: optional:configserver:http://localhost:8091
+
+# settig oAuth 2 client and server oAuth 2 security configs
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: https://dev-zrv8mh7b8k6bay3x.us.auth0.com/
+#      client:
+#        registration:
+#          my-internal-client:
+#            client-id: AZdNvbdC7RErJi42eGU7Wqx3BHarHxAW   # YOUR_CLIENT_ID
+#            client-secret: bx4jVFvTxZSUhahJkrh-bpI1Fi_MaaPQOyp79_W_Q6TGgECiXQKywgAtBpAQCvWV # YOUR_CLIENT_SECRET
+##            client-name: Auth0
+#            provider: auth0
+##            authorization-grant-type: authorization_code # this is different from gateway
+#            authorization-grant-type: client-credentials # this is different from gateway
+##            redirect-uri: "http://localhost:8090/login/oauth2/code/auth0"
+#            scope: internal
+#
+#        provider:
+#          auth0:
+#            issuer-uri: https://dev-zrv8mh7b8k6bay3x.us.auth0.com/
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+# Eureka service discovery/registry configs - Now moved to config server
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+
+#setting actuator
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      orderInventoryBreaker:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 6s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+  retry:
+    instances:
+      orderInventoryRetry:
+        maxAttempts: 3
+        waitDuration: 5s
+
+  ratelimiter:
+    instances:
+      paymentLimiter:
+        timeoutDuration: 4s
+        limitForPeriod: 2
+        limitRefreshPeriod: 2s
+
