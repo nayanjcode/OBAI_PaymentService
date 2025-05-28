@@ -5,7 +5,7 @@ import com.nayan.obai.payment.rest.Order;
 import com.nayan.obai.payment.entity.Payment;
 import com.nayan.obai.payment.rest.Product;
 import com.nayan.obai.payment.event.PaymentResultEvent;
-import com.nayan.obai.payment.exception.ResourceNotFoundException;
+import com.nayan.obai.payment.exception.PaymentServiceException;
 import com.nayan.obai.payment.repository.PaymentRepository;
 import com.nayan.obai.payment.service.PaymentService;
 import com.nayan.obai.payment.service.external.InventoryService;
@@ -86,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService
 	@Override
 	public Payment getTransactionDetails(final UUID transactionId)
 	{
-		return paymentRepository.findById(transactionId).orElseThrow(() -> new ResourceNotFoundException("this transaction does not exist"));
+		return paymentRepository.findById(transactionId).orElseThrow(() -> new PaymentServiceException("this transaction does not exist"));
 	}
 
 	@Override
