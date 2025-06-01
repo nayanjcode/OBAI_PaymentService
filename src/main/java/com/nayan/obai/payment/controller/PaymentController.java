@@ -2,14 +2,16 @@ package com.nayan.obai.payment.controller;
 
 import com.nayan.obai.payment.entity.Payment;
 import com.nayan.obai.payment.entity.PaymentStatus;
-import com.nayan.obai.payment.event.PaymentResultEvent;
 import com.nayan.obai.payment.service.PaymentService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,8 @@ import java.util.UUID;
 @RequestMapping("/payment")
 public class PaymentController
 {
+	final Logger logger = LogManager.getLogger("PaymentController");
+
 	@Autowired
 	private PaymentService paymentService;
 
@@ -31,6 +35,7 @@ public class PaymentController
 	@CircuitBreaker(name = "orderInventoryBreaker", fallbackMethod = "orderInventoryFallback")
 	@Retry(name = "orderInventoryRetry", fallbackMethod = "orderInventoryFallback")
 	@RateLimiter(name = "paymentLimiter", fallbackMethod = "orderInventoryFallback")
+	@PreAuthorize("hasRole('REGULAR_USERS')")
 	ResponseEntity<Void> makePayment(@RequestBody final Payment payment)
 	{
 		paymentService.makePayment(payment);
@@ -47,6 +52,7 @@ public class PaymentController
 	}
 
 	@GetMapping("/{transactionId}")
+	@PreAuthorize("hasRole('ADMIN')")
 	ResponseEntity<Payment> getTransactionDetails(@PathVariable final UUID transactionId)
 	{
 		final Payment transactionDetails = paymentService.getTransactionDetails(transactionId);
@@ -54,6 +60,7 @@ public class PaymentController
 	}
 
 	@GetMapping("/")
+	@PreAuthorize("hasRole('ADMIN')")
 	ResponseEntity<List<Payment>> getPayments()
 	{
 		List<Payment> payments = paymentService.getPayments();
