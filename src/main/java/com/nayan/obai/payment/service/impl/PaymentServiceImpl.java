@@ -35,6 +35,14 @@ public class PaymentServiceImpl implements PaymentService
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
+	public PaymentServiceImpl(PaymentRepository paymentRepository, RestTemplate restTemplate, InventoryService inventoryService, RabbitTemplate rabbitTemplate)
+	{
+		this.paymentRepository = paymentRepository;
+		this.restTemplate = restTemplate;
+		this.inventoryService = inventoryService;
+		this.rabbitTemplate = rabbitTemplate;
+	}
+
 	@Override
 	public void makePayment(final Payment payment)
 	{
