@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface PaymentService
 {
-	void makePayment(Payment payment);
+	boolean makePayment(Payment payment);
 	Payment getTransactionDetails(UUID transactionId);
 	List<Payment> getPayments();
 	void publishPaymentEvent(PaymentResultEvent event);

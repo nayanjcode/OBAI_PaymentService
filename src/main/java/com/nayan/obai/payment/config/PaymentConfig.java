@@ -1,5 +1,7 @@
 package com.nayan.obai.payment.config;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,8 @@ import java.util.List;
 @Configuration
 public class PaymentConfig
 {
+	final Logger logger = LogManager.getLogger("PaymentConfig");
+
 	@Autowired
 	private ClientRegistrationRepository clientRegistrationRepository;
 
@@ -31,6 +35,7 @@ public class PaymentConfig
 	@LoadBalanced
 	public RestTemplate restTemplate()
 	{
+		logger.info("initializing bean of rest template");
 		final RestTemplate restTemplate = new RestTemplate();
 		final List<ClientHttpRequestInterceptor> interceptorList = new ArrayList<>();
 		interceptorList.add(new RestTemplateInterceptor(oAuth2AuthorizedClientManager(clientRegistrationRepository, oAuth2AuthorizedClientRepository)));
@@ -43,6 +48,7 @@ public class PaymentConfig
 			final ClientRegistrationRepository clientRegistrationRepository,
 			final OAuth2AuthorizedClientRepository auth2AuthorizedClientRepository
 	) {
+		logger.debug("initializing OAuth2 Client Manager");
 		final OAuth2AuthorizedClientProvider provider = OAuth2AuthorizedClientProviderBuilder.builder().clientCredentials().build();
 		final DefaultOAuth2AuthorizedClientManager defaultOAuth2AuthorizedClientManager = new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, auth2AuthorizedClientRepository);
 		defaultOAuth2AuthorizedClientManager.setAuthorizedClientProvider(provider);

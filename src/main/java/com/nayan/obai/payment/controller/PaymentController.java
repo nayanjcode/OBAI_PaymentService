@@ -38,13 +38,15 @@ public class PaymentController
 	@PreAuthorize("hasRole('REGULAR_USERS')")
 	ResponseEntity<Void> makePayment(@RequestBody final Payment payment)
 	{
-		paymentService.makePayment(payment);
+		logger.debug("payment request: " + payment);
+		boolean isPaymentSuccess = paymentService.makePayment(payment);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	// creating fallback method for ckt breaker
 	public ResponseEntity<Payment> orderInventoryFallback(final Payment payment, final Exception e)
 	{
+		logger.debug("calling fallback for make payment: " + e.getMessage());
 		final Payment p = Payment.builder()
 				.paymentStatus(PaymentStatus.FAILED)
 				.build();
