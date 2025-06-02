@@ -63,7 +63,7 @@ public class PaymentController
 	@PreAuthorize("hasRole('ADMIN')")
 	ResponseEntity<List<Payment>> getPayments()
 	{
-		List<Payment> payments = paymentService.getPayments();
+		final List<Payment> payments = paymentService.getPayments();
 		return ResponseEntity.ok(payments);
 	}
 }

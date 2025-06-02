@@ -57,6 +57,23 @@ spring:
         jwt:
           issuer-uri: https://dev-93131137.okta.com/oauth2/default
   #          jwk-set-uri: https://your-issuer.com/.well-known/jwks.json # Optional if issuer-uri resolves this
+      client:
+        registration:
+          # oAuth info
+          my-internal-client:
+            client-id: 0oaozifhhdhyAmpdB5d7   # YOUR_CLIENT_ID
+            client-secret: hiNgUbDGHK0EVpiRSK9ouRjjHJlb1wh1SLqGTqe6N2JStvC2QTJOLfG3HMcPoMPy # YOUR_CLIENT_SECRET
+#            client-name: Okta
+            provider: okta
+            authorization-grant-type: client_credentials
+#            redirect-uri: "http://localhost:8090/login/oauth2/code/okta" # redirect to login page in case you are not authenticated
+            scope: internal
+
+        provider:
+          okta:
+            issuer-uri: https://dev-93131137.okta.com/oauth2/default
+#            user-name-attribute: sub
+#            token-uri: https://dev-93131137.okta.com/oauth2/default/v1/token
 
   rabbitmq:
     host: localhost
